@@ -4,6 +4,7 @@ const _       = require('lodash');
 const expect  = require('unexpected');
 const request = require('supertest');
 const baseUrl = 'http://localhost:3000';
+const pry = require('pryjs');
 
 const blog = require('../blog_server');
 
@@ -25,8 +26,8 @@ let mockComment = {
 
 const cleanup = () => {
   return Promise.all([
-    blog.Comments.where('id', '!=', 0).destroy(),
-    blog.Posts.where('id', '!=', 0).destroy(),
+    blog.Comment.where('id', '!=', 0).destroy(),
+    blog.Post.where('id', '!=', 0).destroy(),
     blog.User.where('id', '!=', 0).destroy()
   ]);
 };
@@ -39,12 +40,12 @@ let loginData = {
 describe('Server', () => {
 
   after((done) => {
-    return cleanup().then(() => { 
-      done(); 
+    return cleanup().then(() => {
+      done();
     }).catch(done);
   });
 
-  describe('/user endpoint', () => {
+  describe('/users endpoint', () => {
 
     afterEach((done) => {
       cleanup().then(() => {
@@ -52,9 +53,9 @@ describe('Server', () => {
       }).catch(done);
     });
 
-    it('POST to /user with valid data returns new user id', (done) => {
+    it('POST to /users with valid data returns new user id', (done) => {
       request(baseUrl)
-        .post('/user')
+        .post('/users')
         .send(mockUser)
         .expect(200)
         .end((err, resp) => {
@@ -65,17 +66,17 @@ describe('Server', () => {
         });
     });
 
-    it('POST to /user with invalid data returns 400', (done) => {
+    it('POST to /users with invalid data returns 400', (done) => {
       request(baseUrl)
-        .post('/user')
+        .post('/users')
         .send({})
         .expect(400, done);
     });
 
-    it('GET to /user/:id with id specified returns usr object', (done) => {
+    it('GET to /users/:userId with id specified returns usr object', (done) => {
       blog.User.forge().save(mockUser).then((usr) => {
         request(baseUrl)
-          .get('/user/' + usr.get('id'))
+          .get('/users/' + usr.get('id'))
           .expect(200)
           .end((err, resp) => {
             if (err) done(err);
@@ -97,7 +98,7 @@ describe('Server', () => {
       });
     });
 
-    it('GET to /user/:id with non-existant user specified returns 404', (done) => {
+    it('GET to /user/:userId with non-existant user specified returns 404', (done) => {
        request(baseUrl)
         .get('/user/' + 7009)
         .expect(404, done);
@@ -106,7 +107,7 @@ describe('Server', () => {
   });
 
 
-  describe('/post endpoint:', () => {
+  describe('/posts endpoint:', () => {
 
     afterEach((done) => {
       cleanup().then(() => {
@@ -114,11 +115,11 @@ describe('Server', () => {
       }).catch(done);
     });
 
-    it('POST to /post with post data returns new post id', (done) => {
+    it('POST to /posts with post data returns new post id', (done) => {
       blog.User.forge().save(mockUser).then((usr) => {
         let data = _.extend({author: usr.get('id')}, mockPost);
         request(baseUrl)
-          .post('/post')
+          .post('/posts')
           .send(data)
           .expect(200)
           .end((err, resp) => {
@@ -130,14 +131,14 @@ describe('Server', () => {
       });
     });
 
-    it('POST to /post with invalid data returns 400', (done) => {
+    it('POST to /posts with invalid data returns 400', (done) => {
       request(baseUrl)
-        .post('/post')
+        .post('/posts')
         .send({})
         .expect(400, done);
     });
 
-    it('GET to /post/:id with id specified returns post object', (done) => {
+    it('GET to /posts/:postId with id specified returns post object', (done) => {
       let createUser = blog.User.forge().save(mockUser);
       let testUserId;
       blog.User
@@ -145,13 +146,13 @@ describe('Server', () => {
         .save(mockUser)
         .then((usr) => {
           testUserId = usr.get('id');
-          return blog.Posts
+          return blog.Post
             .forge()
             .save(_.extend({author: testUserId}, mockPost));
         })
         .then((post) => {
           request(baseUrl)
-            .get('/post/' + post.get('id'))
+            .get('/posts/' + post.get('id'))
             .expect(200)
             .end((err, resp) => {
               if (err) done(err);
@@ -174,9 +175,9 @@ describe('Server', () => {
         }).catch(done);
     });
 
-    it('GET to /post/:id with non-existant user id specified returns 404', (done) => {
+    it('GET to /posts/:postId with non-existant user id specified returns 404', (done) => {
       request(baseUrl)
-        .get('/post/' + 10000095)
+        .get('/posts/' + 10000095)
         .expect(404, done);
     });
 
@@ -192,7 +193,7 @@ describe('Server', () => {
 
     it('GET to /posts returns a list of all the posts', (done) => {
       blog.User.forge().save(mockUser).then((usr) => {
-        return  blog.Posts
+        return  blog.Post
           .forge()
           .save(_.extend({author: usr.get('id')}, mockPost));
       }).then((post) => {
@@ -209,7 +210,7 @@ describe('Server', () => {
 
   });
 
-  describe('/comment endpt', () => {
+  describe('/comments endpt', () => {
 
     afterEach((done) => {
       return cleanup().then(() => {
@@ -217,19 +218,19 @@ describe('Server', () => {
       }).catch(done);
     });
 
-    it('POST to /comment with valid data returns new comment id', (done) => {
+    it('POST to /comments with valid data returns new comment id', (done) => {
       let testUserId;
       blog.User.forge().save(mockUser).then((usr) => {
         testUserId = usr.get('id');
-        return blog.Posts
+        return blog.Post
           .forge()
           .save(_.extend({author: testUserId}, mockPost));
       }).then((post) => {
         request(baseUrl)
-          .post('/comment')
+          .post('/comments')
           .send(_.extend({
-            user_id: testUserId,
-            post_id: post.get('id')
+            author: testUserId,
+            post: post.get('id')
           }, mockComment))
           .expect(200)
           .end((err, resp) => {
@@ -241,9 +242,9 @@ describe('Server', () => {
       }).catch(done);
     });
 
-    it('POST to /comment with empty data returns 400', (done) => {
+    it('POST to /comments with empty data returns 400', (done) => {
       request(baseUrl)
-        .post('/comment')
+        .post('/comments')
         .send({})
         .expect(400, done);
     });
@@ -253,20 +254,20 @@ describe('Server', () => {
       let testPostId;
       blog.User.forge().save(mockUser).then((usr) => {
         testUserId = usr.get('id');
-        return blog.Posts
+        return blog.Post
           .forge()
           .save(_.extend({author: testUserId}, mockPost));
       }).then((post) => {
         testPostId = post.get('id');
-        return blog.Comments
+        return blog.Comment
           .forge()
           .save({
-            user_id: testUserId,
-            post_id: post.get('id')
+            author: testUserId,
+            post: post.get('id')
           }, mockComment);
       }).then(() => {
         request(baseUrl)
-          .get('/post/' + testPostId)
+          .get('/posts/' + testPostId)
           .expect(200)
           .end((err, resp) => {
             if (err) done(err);
@@ -280,5 +281,5 @@ describe('Server', () => {
     });
 
   });
- 
+
 });

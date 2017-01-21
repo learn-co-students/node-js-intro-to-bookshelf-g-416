@@ -45,12 +45,12 @@ describe('Models', () => {
   });
 
   it('Posts model exists', () => {
-    expect(blog.Posts, 'to be defined');
+    expect(blog.Post, 'to be defined');
   });
 
   it('Posts model can save a post', (done) => {
     mockPost.author = mockUser.id;
-    blog.Posts
+    blog.Post
       .forge(mockPost)
       .save()
       .catch((err) => { done(err); })
@@ -67,20 +67,23 @@ describe('Models', () => {
   });
 
   it('Comments model exists', () => {
-    expect(blog.Comments, 'to be defined');
+    expect(blog.Comment, 'to be defined');
   });
 
   it('Comments model can save a comment on a post', (done) => {
-    mockComment.post_id = mockPost.id;
-    mockComment.user_id = mockUser.id;
-    blog.Comments
+    mockComment.post = mockPost.id;
+    mockComment.author = mockUser.id;
+    blog.Comment
       .forge(mockComment)
       .save()
-      .catch((err) => { done(err); })
+      .catch((err) => {
+        done(err);
+      })
       .then((comment) => {
         expect(comment.attributes, 'to have keys', [
           'id',
-          'user_id',
+          'author',
+          'post',
           'body',
           'created_at',
           'updated_at',
