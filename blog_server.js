@@ -16,8 +16,9 @@ const bookshelf = require('bookshelf')(knex);
 
 // This is a good place to start!
 
-
-
+exports.User = require('./models/user')(bookshelf);
+exports.Post = require('./models/post')(bookshelf);
+exports.Comment = require('./models/comment')(bookshelf);
 
 // Exports for Server hoisting.
 const listen = (port) => {
@@ -41,4 +42,3 @@ exports.up = (justBackend) => {
       console.log('Listening on port 3000...');
     });
 };
-
