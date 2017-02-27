@@ -22,8 +22,9 @@ let mockComment = {
 
 describe('Models', () => {
 
-  it('User models exist', () => {
+  it('User models exist', (done) => {
     expect(blog.User, 'to be defined');
+    done();
   });
 
   it('User model can save a user', (done) => {
@@ -44,8 +45,9 @@ describe('Models', () => {
       });
   });
 
-  it('Posts model exists', () => {
+  it('Posts model exists', (done) => {
     expect(blog.Posts, 'to be defined');
+    done();
   });
 
   it('Posts model can save a post', (done) => {
@@ -66,8 +68,9 @@ describe('Models', () => {
       });
   });
 
-  it('Comments model exists', () => {
+  it('Comments model exists', (done) => {
     expect(blog.Comments, 'to be defined');
+    done();
   });
 
   it('Comments model can save a comment on a post', (done) => {

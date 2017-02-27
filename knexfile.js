@@ -3,7 +3,7 @@
 module.exports = {
 
   testing: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       database: 'learnco_blog_test'
     },
@@ -17,7 +17,7 @@ module.exports = {
   },
 
   development: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       database: 'learnco_blog',
     },
