@@ -41,6 +41,10 @@ describe('Models', () => {
         expect(usr.get('username'), 'to be', mockUser.username);
         mockUser.id = usr.get('id');
         done();
+      })
+      .catch(err => {
+        console.log(err);
+        done(err);
       });
   });
 
