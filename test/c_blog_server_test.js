@@ -25,9 +25,9 @@ let mockComment = {
 
 const cleanup = () => {
   return Promise.all([
-    blog.Comments.where('id', '!=', 0).destroy(),
-    blog.Posts.where('id', '!=', 0).destroy(),
-    blog.User.where('id', '!=', 0).destroy()
+    blog.Comments.where('id', '!=', 0).destroy({require:false}),
+    blog.Posts.where('id', '!=', 0).destroy({require:false}),
+    blog.User.where('id', '!=', 0).destroy({require:false})
   ]);
 };
 
