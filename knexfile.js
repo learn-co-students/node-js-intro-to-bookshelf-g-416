@@ -3,31 +3,32 @@
 module.exports = {
 
   testing: {
-    client: 'postgresql',
-    connection: {
-      database: 'learnco_blog_test'
-    },
+    client: 'pg',
+    connection: 'postgres://postgres:@localhost/learnco_blog_test',
     pool: {
-      min:2,
+      min: 2,
       max: 10
-    },
-    migrations: {
-      tableName: 'knex_migrations'
     }
+    // migrations: {
+    //   tableName: 'knex_migrations'
+    // }
   },
 
   development: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
-      database: 'learnco_blog',
+      host : '127.0.0.1',
+      user : 'dashakondratieva',
+      password : '',
+      database: 'learnco_blog'
     },
     pool: {
       min: 2,
       max: 10
     },
-    migrations: {
-      tableName: 'knex_migrations'
-    }
+    // migrations: {
+    //   tableName: 'knex_migrations'
+    // }
   },
 
 };
